@@ -1,8 +1,8 @@
 # Project Status
 
 **Current Phase**: 0.0 (Prototype - GRIPS Methodology Development)
-**Current Stage**: Requirements - Implementation
-**Active Work**: Drafting new methodology sections based on Q&A sessions
+**Current Stage**: Requirements - Implementation (v0.0.1 released, working on v0.0.2)
+**Active Work**: Versioning v0.0.1 release, preparing for agent project management section
 
 ## Layer Synchronization
 - Requirements (methodology.md): In progress (commit 45a14f8 added resumability, now adding new sections)
@@ -58,9 +58,24 @@
   - Breaking down new ideas into appropriately-scoped phases
   - Encouraging adherence to methodology while remaining helpful
 
-## Next Steps
-1. Commit new section 4.2 and expanded gate guidance
-2. Start Q&A 0.0.4 (Agent project management and phase guidance)
-3. Draft and integrate new section on agent guidance
-4. Final review of all changes
-5. Pass requirements approval gate for methodology v0.0.1
+## Milestones
+
+### ✅ v0.0.1 Released (2026-01-08)
+- **Status**: First public release, shared with design partners
+- **Git Tag**: `v0.0.1` (commit b9996f7)
+- **Released Snapshot**: `releases/0.0.1/methodology.md`
+- **What's Included**:
+  - Complete GRIPS workflow (3 layers + implementation)
+  - Q&A session process
+  - Review cycles with Critic Markup
+  - Section 4.2: Breaking down specs into implementation plans (7 subsections)
+  - Enhanced approval gate review process
+  - PROJECT-STATUS.md resumability
+- **Known Gaps**:
+  - Agent project management and phase guidance (planned for v0.0.2)
+
+## Next Steps (v0.0.2)
+1. Start Q&A 0.0.4 (Agent project management and phase guidance)
+2. Draft and integrate new section on agent guidance
+3. Final review of all v0.0.2 changes
+4. Release v0.0.2 snapshot
