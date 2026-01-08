@@ -436,10 +436,14 @@ Each phase of a GRIPS project follows a structured workflow with distinct stages
 
 #### Stage 1: Q&A
 - Conduct question-and-answer sessions to understand requirements/design/implementation needs
-- **Process**: Ask one question at a time, document the answer, then proceed to the next question
+- **Process**:
+  - Agent asks questions directly in chat conversation with human
+  - Human answers directly in chat
+  - Agent records both question and answer in the Q&A file immediately
+  - Ask one question at a time, wait for answer, record it, then proceed to next question
 - Continue until all questions are answered and details are clear enough to proceed to drafting
 - Document all Q&A in `specs/{layer}/qa/{version}-{topic}.md`
-- Update continuously as questions are answered
+- Update the Q&A file continuously as each question is asked and answered
 
 #### Stage 2: Draft
 - Agent drafts specification documents based on Q&A findings
@@ -562,7 +566,13 @@ When back-and-forth is needed to clarify or flesh out requirements/design:
 
 ### 5.5 Q&A Sessions
 
-**Purpose**: Document the decision-making process for significant changes
+**Purpose**: Document the decision-making process for significant changes through interactive chat conversations
+
+**Process**:
+1. Agent asks question directly in chat
+2. Human answers directly in chat
+3. Agent immediately records both question and answer in the Q&A file
+4. Repeat for next question
 
 **Location**: `specs/{layer}/qa/{version}-{topic}.md`
 
@@ -597,7 +607,7 @@ When back-and-forth is needed to clarify or flesh out requirements/design:
 **Last Updated**: YYYY-MM-DD (Question N)
 ```
 
-**Q&A sessions are updated continuously** as questions are asked and answered. They serve as the permanent record of why decisions were made.
+**Q&A sessions are interactive conversations** - the agent asks questions in chat, the human answers in chat, and the agent records both immediately in the Q&A file. Sessions are updated continuously as each question-answer exchange happens. They serve as the permanent record of why decisions were made.
 
 ### 5.6 Review Cycles with Critic Markup
 
