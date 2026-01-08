@@ -170,8 +170,6 @@ GRIPS organizes project artifacts into three layers, each with distinct concerns
 
 **Purpose**: Provide step-by-step executable prompts for agents
 
-**TODO**: Needs expansion - see Q&A session for guidance on breaking down specs into prompt steps
-
 **Contents**:
 - Phased breakdown of work (phase-0-prototype, phase-1-mvp, etc.)
 - Step-by-step instructions for agents to execute
@@ -185,7 +183,224 @@ GRIPS organizes project artifacts into three layers, each with distinct concerns
 - **NO ACTUAL CODE** - only descriptions of what to implement
 - Code belongs in the implementation phase, not the plan
 
-### 4.2 Context-Dependent Layer Assignment
+### 4.2 Breaking Down Specs into Implementation Plans
+
+This section provides detailed guidance for agents on converting design specifications into executable implementation plans.
+
+#### 4.2.1 Step Granularity
+
+**What is a Step?**
+
+A step is a single logical unit of work that:
+- Accomplishes ONE specific thing (e.g., "Add CoreData Stack", "Implement Readium ePub Rendering")
+- Typically touches 1-3 files maximum
+- Results in a compilable, testable state
+- Maps to one commit (critical for tracking and rollback)
+
+**Good Granularity Examples:**
+- "Add CoreData Stack" (creates 2 files, modifies 1 file)
+- "Add Settings Entity" (modifies data model, creates manager service)
+- "Implement Readium ePub Rendering" (creates 2 views, modifies 1 file)
+- "Add Tap Gesture to Extract Word" (modifies 2 existing files)
+
+**Too Granular (Avoid):**
+- "Add import statement to file"
+- "Create single property"
+- "Write one function"
+
+**Too Broad (Avoid):**
+- "Implement entire translation system" (should be broken into: create service, wire to UI, add error handling, etc.)
+- "Build complete library feature" (should be broken into: create views, add storage, implement import, etc.)
+
+#### 4.2.2 Step Structure and Format
+
+Each step must follow this standardized structure:
+
+**Step Header:**
+```markdown
+### Step X.Y: [Descriptive Title]
+```
+
+**File Context:**
+```markdown
+**Files Created**:
+- path/to/NewFile.ext
+
+**Files Modified**:
+- path/to/ExistingFile.ext
+```
+
+**Prompt Block:**
+
+The prompt should be formatted as a blockquote or code fence containing:
+
+```markdown
+**Prompt**:
+
+> [Main description of what to implement]
+>
+> CREATE path/to/NewFile.ext:
+>
+> TASKS:
+> 1. [Specific action to take]
+> 2. [Another specific action]
+> 3. [Include parameter names, values, and specific details]
+>
+> REQUIREMENTS:
+> - [Constraint or rule that MUST be followed]
+> - [Technical requirement, e.g., "Use async/await pattern"]
+> - [Things that MUST NOT be done]
+>
+> UPDATE path/to/ExistingFile.ext:
+>
+> TASKS:
+> 1. [Specific modification to make]
+>
+> BUILD AND VERIFY:
+> [Instructions to build and test the implementation]
+>
+> VERIFICATION CHECKLIST:
+> - [ ] [Specific thing to verify]
+> - [ ] [Another verifiable item]
+> - [ ] [Must be executable without ambiguity]
+```
+
+**After Prompt:**
+```markdown
+**Verification**:
+[Brief summary of what should be verified]
+
+**Status**: ✅ Complete (YYYY-MM-DD) | ⏳ Not Started | 🔄 In Progress
+```
+
+#### 4.2.3 Research Phases
+
+Include a RESEARCH PHASE section when:
+1. There is a **significant unknown** that cannot be resolved without investigation
+2. Research must happen **in collaboration with the human** before code can be written
+3. The unknown would **block implementation** without prior investigation
+
+**RESEARCH PHASE Structure:**
+```markdown
+RESEARCH PHASE:
+1. [What needs to be investigated]
+2. [Starting points: URLs, docs, example code]
+3. [What to look for or understand]
+4. [Optional: Deliverable document to create]
+```
+
+**Examples:**
+- Study third-party API documentation (e.g., Readium's Decoration API)
+- Investigate data format from external source (e.g., kaikki.org Wiktionary JSON structure)
+- Research technical approach for unfamiliar problem domain
+
+**Important:** Research phases are for unknowns requiring investigation and collaboration, not for looking up simple API documentation.
+
+#### 4.2.4 Level of Detail in Tasks
+
+**Be specific when:**
+- The detail is critical to implementation (e.g., exact data types: "UUID, required")
+- There are specific values that must be used (e.g., "default: 1.0")
+- The parameter/property name is part of the design spec
+- Ambiguity would lead to wrong implementation choices
+
+**Be general when:**
+- The implementation details are obvious from context
+- The agent has enough information to make good choices
+- Over-specifying would constrain reasonable alternatives
+
+**Rule of thumb:** Include enough detail that the agent doesn't have to guess critical decisions, but trust the agent to handle implementation details.
+
+#### 4.2.5 Organizing Steps into Stages
+
+Use stages to group related steps into logical milestones:
+
+**When to use stages:**
+- When a feature or phase has 4+ steps
+- When steps naturally cluster into sub-goals
+- When there are logical testing checkpoints
+- Always use stages for the first phase/MVP (it needs the most structure)
+
+**When NOT to use stages:**
+- Small features with 1-3 steps
+- Steps are already clearly independent
+
+**Stage Structure:**
+```markdown
+## Stage N: [Stage Name and Goal]
+
+### Step N.1: [First Step]
+[step details]
+
+### Step N.2: [Second Step]
+[step details]
+```
+
+**Example:**
+- Stage 1: Foundation (Get Dependencies Working)
+- Stage 2: Core Feature (Implement Main Functionality)
+- Stage 3: Polish (Improve UX and Handle Edge Cases)
+
+#### 4.2.6 Organizing Large Implementation Plans
+
+When a phase has many features (8+ features or 1000+ lines total), split into multiple files:
+
+**Directory Structure:**
+```
+specs/implementation-plan/phase-N-name/
+├── index.md                    # Overview, progress table, quick links
+├── 01-feature-name.md          # Feature 1
+├── 02-feature-name.md          # Feature 2
+├── 03-feature-name.md          # Feature 3
+└── ...
+```
+
+**Index File Contents:**
+- Phase overview and goals
+- Progress tracking table (all steps across all features)
+- Quick links to each feature file
+- Current status and notes
+
+**Benefits:**
+- Easier navigation (find specific features quickly)
+- Smaller files (easier to edit and review)
+- Clear feature boundaries
+- Better git diffs (changes isolated to specific feature files)
+- Scales well for large phases
+
+#### 4.2.7 Step Ordering and Dependencies
+
+**Critical Ordering Principles:**
+
+1. **Each step must be individually verifiable** - After completing a step, the product should build, run, and/or pass tests
+2. **Avoid rework** - Consider dependencies and preload foundational work when needed
+3. **Balance foundation vs scope creep** - Build necessary foundations without expanding scope beyond phase goals
+4. **Manageable and testable scope** - Don't build more features or complexity than needed for current phase
+5. **Review step size** - Before finalizing the plan, review each step and break down any that are too large
+
+**Example of Good Ordering:**
+- ✅ Step 1.1: Create Project (foundational, verifiable: builds)
+- ✅ Step 1.2: Add Dependencies (foundational, verifiable: builds with dependencies)
+- ✅ Step 1.3: Add Test Data (needed for next steps, verifiable: data available)
+- ✅ Step 2.1: Implement Core Feature (verifiable: feature works)
+- ❌ NOT: Step 2.1: Implement Core Feature and Polish UI (too large, should be separate)
+
+**Avoiding Rework:**
+- ✅ Build infrastructure BEFORE building features that need it
+- ✅ Create base components BEFORE building complex views
+- ❌ Build features with temporary solutions, then refactor later
+
+**When to Preload Foundation:**
+- Infrastructure needed by multiple features (do it once, early)
+- Breaking changes that would affect existing features (do upfront)
+- Core architecture patterns (establish early, avoid refactoring)
+
+**When NOT to Preload:**
+- Features not needed for current phase goals
+- Optimizations that can wait
+- "Nice to have" improvements
+
+### 4.3 Context-Dependent Layer Assignment
 
 What belongs in which layer depends on what the product is and what problem it's solving.
 
@@ -196,7 +411,7 @@ What belongs in which layer depends on what the product is and what problem it's
 
 **Rule of thumb**: Ask "Is this a core feature of what we're building?" If yes, it belongs in requirements. If it's about how we build it, it belongs in design or lower.
 
-### 4.3 Data Modeling Standards
+### 4.4 Data Modeling Standards
 
 Use established paradigms where applicable:
 
@@ -238,6 +453,48 @@ Each phase of a GRIPS project follows a structured workflow with distinct stages
 - Each cycle may result in commits
 
 #### Stage 4: Approval Gate
+
+Before passing through any approval gate, the agent must critically review the current spec layer for gaps.
+
+**Agent Responsibilities at Each Gate:**
+
+1. **Carefully review current spec phase materials**
+2. **Critically analyze for gaps:**
+   - Are there unclear requirements?
+   - Are there unresolved design decisions?
+   - Are there missing details needed for next stage?
+   - Are there contradictions or inconsistencies?
+   - Are there untested assumptions?
+3. **Recommend additional refinement if gaps found:**
+   - Suggest specific areas needing clarification
+   - Propose additional Q&A sessions if needed
+   - Identify questions that need answers
+4. **Do NOT proceed until both agent and human are satisfied:**
+   - Agent gives explicit recommendation: "Ready to proceed" or "Needs refinement"
+   - Human gives explicit approval to pass through gate
+   - If either has concerns, conduct additional review cycles
+
+**Example Gate Review:**
+```
+Agent: "I've reviewed the Design spec and identified these gaps before
+proceeding to Implementation Plan:
+
+1. Section 2.3 mentions 'error recovery strategy' but doesn't specify
+   which errors to handle or how
+2. The data model shows relationships but not cardinality constraints
+3. API authentication approach is mentioned but not defined
+
+Recommendation: Additional Q&A session to resolve these before creating
+the implementation plan. Would you like me to start a Q&A session?"
+```
+
+**What Gate Reviews Prevent:**
+- Starting implementation with unclear requirements
+- Building the wrong thing due to design ambiguity
+- Rework from discovering gaps mid-implementation
+- Wasted time on implementation that doesn't match intent
+
+**Final Approval:**
 - Human explicitly approves the spec layer
 - No changes proceed to next layer without approval
 - Approval marks completion of this layer's work
