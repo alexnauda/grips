@@ -751,14 +751,20 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
 - Layer synchronization status (e.g., "Requirements updated in commit abc123, design not yet synced")
 - Recent Q&A sessions and their status
 - Approval gates passed
+- **Outstanding work** with sufficient context to resume - include what needs to be done, why, and any critical context needed to complete the work
 
 **Strictly Forbidden**:
-- Release notes or change logs (what was added in commits)
-- Completed items in "Next Steps" or "Outstanding Work"
+- Release notes or change logs (what was added in commits, accomplishments)
+- Completed work marked as done in "Outstanding Work"
+- Completed items in "Next Steps"
 - Detailed feature lists or "What's Included" sections
 - Temporal narrative history (use git log for history)
 - Milestones with detailed descriptions
 - Any content that duplicates information available in git history or spec files
+
+**Key Distinction**:
+- ✅ ALLOWED: Incomplete tasks with detailed context (needed for resumability)
+- ❌ FORBIDDEN: Completed accomplishments, change logs, "what we did" (that's git history)
 
 **Purpose**: PROJECT-STATUS.md answers "Where are we now and what's next?" It is NOT a changelog, release notes, or project history. Keep it minimal and forward-looking.
 
@@ -778,7 +784,17 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
 ## Recent Activity
 - Q&A 0.0.1: Complete
 - Q&A 0.0.2: Complete
-- Requirements draft: In review (cycle 2)
+- Requirements approval gate: Passed
+
+## Outstanding Work
+
+### API Authentication Strategy
+**What's Needed**: Resolve authentication approach for external API integration
+**Context**: Reviewer feedback identified gap in requirements - API auth not specified
+**Tasks**:
+- Additional Q&A session to decide: OAuth 2.0 vs API key vs JWT
+- Update requirements.md section 3.2 with chosen approach
+- Propagate decision to design layer
 
 ## Next Steps
 1. Complete requirements review cycle
@@ -846,12 +862,16 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
 9. **Maintain PROJECT-STATUS.md continuously** - keep it minimal and forward-looking:
    - Update current phase and stage whenever they change
    - Document what's currently being worked on (1-2 sentences)
-   - List next steps (upcoming tasks, not completed ones)
+   - **Outstanding Work**: List incomplete tasks with full context needed to resume
+     - Include what needs to be done, why, and critical context
+     - This is where detailed task information belongs (for resumability)
+   - **Next Steps**: List upcoming tasks (brief, no completed items)
    - Track layer synchronization status
    - Document recent Q&A sessions and approval gates passed
-   - **DO NOT** include release notes, change logs, detailed feature lists, or completed work
+   - **DO NOT** include release notes, change logs, or completed accomplishments
+   - **DO NOT** mark items as "✅ COMPLETE" in Outstanding Work (remove them when done)
    - **DO NOT** duplicate information available in git history or spec files
-   - Keep it concise - it answers "Where are we now and what's next?"
+   - **Key distinction**: Detailed context for INCOMPLETE work (resumability) vs completed work (git history)
 10. Follow the step-by-step layer workflow
 11. Document all significant decisions in Q&A sessions or ADRs
 
