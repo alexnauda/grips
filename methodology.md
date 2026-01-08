@@ -46,6 +46,7 @@ Every GRIPS project has this structure:
 ```
 project-root/
 ├── METHODOLOGY.md              # Points to GRIPS version in ~/.grips/
+├── PROJECT-STATUS.md           # Project/phase-level status tracking
 ├── specs/
 │   ├── requirements/
 │   │   ├── requirements.md     # Single file initially; splits at 1000 lines
@@ -94,9 +95,33 @@ Code and tests live in language-specific standard locations and are version cont
 
 ---
 
-## 3. Layer Separation & Concerns
+## 3. Terminology Glossary
 
-### 3.1 The Three Layers
+To ensure consistent understanding across GRIPS projects, these terms have specific meanings:
+
+| Term | Definition |
+|------|------------|
+| **Phase** | Major project increment with distinct goals (e.g., Phase 0 = Prototype, Phase 1 = MVP, Phase 2+ = Expansion). Uses semantic-style versioning (0.0, 1.0, 2.0). |
+| **Layer** | One of the three spec layers: Requirements (what/why), Design (how), or Implementation Plan (steps). |
+| **Step** | Granular task in an implementation plan with its own prompt, verification checklist, and status. |
+| **Q&A Session** | Documented question-and-answer process for making decisions about spec changes. Versioned using three-part numbers (e.g., 0.0.1, 0.0.2). |
+| **Stage** | Workflow stage within GRIPS: Q&A → Draft → Review → Implementation. Not to be confused with project-specific sub-stages. |
+| **Approval Gate** | Point where review cycles must complete with approval before proceeding to next layer or stage. |
+| **Checkpoint** | Aggregated verification point in implementation plans for testing that requires multiple steps to be complete (e.g., cross-platform testing, integration testing). |
+| **Verification Checklist** | Immediate verification items checked after completing each individual implementation step. |
+| **Critic Markup** | Standard markdown format for human review feedback on agent-drafted documents. |
+| **ADR** | Architecture Decision Record - documents significant architectural or design decisions. |
+| **Propagation** | Process of updating all affected layers when a change is made (bidirectional: up, down, or both). |
+
+**Not used in GRIPS**:
+- **Sprint**, **Iteration** - GRIPS uses Phases and Stages instead
+- **Release** - GRIPS uses "Phase completion" instead
+
+---
+
+## 4. Layer Separation & Concerns
+
+### 4.1 The Three Layers
 
 GRIPS organizes project artifacts into three layers, each with distinct concerns:
 
@@ -156,7 +181,7 @@ GRIPS organizes project artifacts into three layers, each with distinct concerns
 - **NO ACTUAL CODE** - only descriptions of what to implement
 - Code belongs in the implementation phase, not the plan
 
-### 3.2 Context-Dependent Layer Assignment
+### 4.2 Context-Dependent Layer Assignment
 
 What belongs in which layer depends on what the product is and what problem it's solving.
 
@@ -167,7 +192,7 @@ What belongs in which layer depends on what the product is and what problem it's
 
 **Rule of thumb**: Ask "Is this a core feature of what we're building?" If yes, it belongs in requirements. If it's about how we build it, it belongs in design or lower.
 
-### 3.3 Data Modeling Standards
+### 4.3 Data Modeling Standards
 
 Use established paradigms where applicable:
 
@@ -182,9 +207,34 @@ Use established paradigms where applicable:
 
 ---
 
-## 4. Workflow & Procedures
+## 5. Workflow & Procedures
 
-### 4.1 Layer-by-Layer Progression
+### 5.1 Workflow Stages
+
+GRIPS follows a structured workflow with distinct stages:
+
+#### Stage 1: Q&A
+- Conduct question-and-answer sessions to understand requirements/design/implementation needs
+- Document all Q&A in `specs/{layer}/qa/{version}-{topic}.md`
+- Update continuously as questions are answered
+
+#### Stage 2: Draft
+- Agent drafts specification documents based on Q&A findings
+- Create or update requirements.md, design.md, or implementation-plan files
+- Start with minimal structure, build out based on Q&A
+
+#### Stage 3: Review Cycles
+- Human reviews using Critic Markup
+- Agent responds to feedback (resolve simple changes, reply to complex ones)
+- Multiple review-revise cycles until human approval
+- Each cycle may result in commits
+
+#### Stage 4: Approval Gate
+- Human explicitly approves the spec layer
+- No changes proceed to next layer without approval
+- Approval marks completion of this layer's work
+
+### 5.2 Layer-by-Layer Progression
 
 GRIPS follows a strict sequential workflow for each layer:
 
@@ -198,9 +248,9 @@ Implementation Plan Q&A → Draft implementation plan → Review cycles → Appr
 Execute Implementation (write actual code)
 ```
 
-**Each layer must be approved before moving to the next.**
+**Each layer must be approved (pass through the approval gate) before moving to the next.**
 
-### 4.2 Change Propagation
+### 5.3 Change Propagation
 
 Changes can originate at any layer and must propagate through all affected layers:
 
@@ -221,7 +271,7 @@ Requirements ← Design → Implementation Plan → Code
 
 **Agent Responsibility**: Before starting work, the agent must explicitly identify the change origin layer to determine propagation direction.
 
-### 4.3 Two-Path Workflow
+### 5.4 Two-Path Workflow
 
 #### Path 1: Simple/Obvious Changes
 
@@ -242,7 +292,7 @@ When back-and-forth is needed to clarify or flesh out requirements/design:
 5. Commit all spec/plan changes
 6. Then implement in separate commit(s)
 
-### 4.4 Q&A Sessions
+### 5.5 Q&A Sessions
 
 **Purpose**: Document the decision-making process for significant changes
 
@@ -281,7 +331,7 @@ When back-and-forth is needed to clarify or flesh out requirements/design:
 
 **Q&A sessions are updated continuously** as questions are asked and answered. They serve as the permanent record of why decisions were made.
 
-### 4.5 Review Cycles with Critic Markup
+### 5.6 Review Cycles with Critic Markup
 
 **Human reviews using Critic Markup format** to provide feedback on agent-drafted documents.
 
@@ -296,7 +346,7 @@ When back-and-forth is needed to clarify or flesh out requirements/design:
    - Reply to the Critic Markup comment explaining the decision
    - Leave comment in place for human review
 
-### 4.6 Conflict Resolution
+### 5.7 Conflict Resolution
 
 When encountering conflicts or inconsistencies:
 
@@ -306,7 +356,7 @@ When encountering conflicts or inconsistencies:
    - Confirm with human before starting Q&A process
    - Follow Path 2 workflow (Q&A → spec updates → review → implement)
 
-### 4.7 Commit Strategy
+### 5.8 Commit Strategy
 
 **Spec Review Phase**:
 - Multiple commits during review cycles
@@ -326,9 +376,9 @@ When encountering conflicts or inconsistencies:
 
 ---
 
-## 5. Implementation Plans & Phasing
+## 6. Implementation Plans & Phasing
 
-### 5.1 Phase Structure
+### 6.1 Phase Structure
 
 Implementation plans are organized into phases representing project evolution:
 
@@ -336,7 +386,7 @@ Implementation plans are organized into phases representing project evolution:
 - **Phase 1 (1.0)**: MVP - minimum viable product
 - **Phase 2+ (2.0, 3.0...)**: Expansion - additional features
 
-### 5.2 Implementation Plan Format
+### 6.2 Implementation Plan Format
 
 Each phase contains numbered feature files with steps:
 
@@ -394,22 +444,85 @@ Each phase contains numbered feature files with steps:
 
 ### Step 1.2: {Next Step}
 ...
+
+---
+
+## Checkpoint 1: {Checkpoint Name}
+
+**Purpose**: Aggregated verification after completing multiple steps
+
+**Prerequisites**:
+- Step 1.1 complete
+- Step 1.2 complete
+
+**Verification Tasks**:
+- [ ] {Cross-platform testing task}
+- [ ] {Integration testing task}
+- [ ] {Performance testing task}
+- [ ] {End-to-end testing scenario}
+
+**Status**: ✅ Complete (YYYY-MM-DD) | ⏳ In Progress | ⭕ Not Started
+
+---
 ```
 
-### 5.3 Status Tracking
+**Checkpoints** are placed after groups of related steps to perform verification that couldn't be done during individual steps (e.g., integration testing, cross-device testing, performance testing).
 
-**Status is tracked inline** in implementation plan documents (for v0.0.1).
+### 6.3 Status Tracking
+
+GRIPS uses two levels of status tracking:
+
+#### Project/Phase-Level Status (PROJECT-STATUS.md)
+
+Track overall project progress in `PROJECT-STATUS.md` at project root:
+
+**Required Contents**:
+- Current phase and stage (e.g., "Phase 0.0, Requirements Review")
+- What's currently being worked on
+- What's next
+- Layer synchronization status (e.g., "Requirements updated in commit abc123, design not yet synced")
+- Recent Q&A sessions and their status
+- Approval gates passed
+
+**Example**:
+```markdown
+# Project Status
+
+**Current Phase**: 0.0 (Prototype)
+**Current Stage**: Requirements - Review Cycle 2
+**Active Work**: Addressing feedback on requirements.md from review
+
+## Layer Synchronization
+- Requirements: Updated (commit abc123) - In Review
+- Design: Not started
+- Implementation Plan: Not started
+
+## Recent Activity
+- Q&A 0.0.1: Complete
+- Q&A 0.0.2: Complete
+- Requirements draft: In review (cycle 2)
+
+## Next Steps
+1. Complete requirements review cycle
+2. Pass requirements approval gate
+3. Begin design Q&A session
+```
+
+#### Implementation Step Status (Inline)
+
+**Status is tracked inline** in implementation plan step documents.
 
 **Status must be single source of truth**:
+- Each status item has exactly one location (no duplication)
 - No diary-like release notes mixed with status
 - Release notes are separate documents if needed
 - Status tracks completion state, not narrative history
 
 ---
 
-## 6. Testing
+## 7. Testing
 
-### 6.1 Testing in GRIPS Layers
+### 7.1 Testing in GRIPS Layers
 
 **Design Layer**: Specifies what to test
 - Testing strategy
@@ -424,9 +537,9 @@ Each phase contains numbered feature files with steps:
 
 ---
 
-## 7. Rules & Constraints
+## 8. Rules & Constraints
 
-### 7.1 Mandatory Rules
+### 8.1 Mandatory Rules
 
 1. **ALL changes must propagate through ALL layers** - no exceptions
 2. **Implementation plans must NEVER include actual code** - only descriptions
@@ -438,8 +551,9 @@ Each phase contains numbered feature files with steps:
 8. **No temporal information in specs** - documentation is evergreen
 9. **Status is single source of truth** - no mixing with narrative history
 10. **All specs/ artifacts are version controlled**
+11. **Maintain PROJECT-STATUS.md** - keep project/phase-level status current
 
-### 7.2 Agent Instructions
+### 8.2 Agent Instructions
 
 **When working on a GRIPS project, you MUST**:
 
@@ -465,9 +579,9 @@ Each phase contains numbered feature files with steps:
 
 ---
 
-## 8. Examples
+## 9. Examples
 
-### 8.1 Example: Adding a New Feature (Downward Flow)
+### 9.1 Example: Adding a New Feature (Downward Flow)
 
 **Scenario**: User requests "Add user authentication"
 
@@ -511,7 +625,7 @@ Each phase contains numbered feature files with steps:
 
 10. **Execute**: Agent implements each step, one commit per step
 
-### 8.2 Example: Bug Fix (Upward Flow)
+### 9.2 Example: Bug Fix (Upward Flow)
 
 **Scenario**: Error message is incorrect
 
@@ -531,7 +645,7 @@ Each phase contains numbered feature files with steps:
 7. Review cycles
 8. Then fix code
 
-### 8.3 Example: File Split at 1000 Lines
+### 9.3 Example: File Split at 1000 Lines
 
 **Scenario**: `requirements.md` reaches 1023 lines
 
@@ -566,7 +680,7 @@ specs/requirements/
 
 ---
 
-## 9. GRIPS Methodology Versioning
+## 10. GRIPS Methodology Versioning
 
 This document represents GRIPS Methodology version **0.0.1**.
 
@@ -591,7 +705,7 @@ For more information, visit: https://github.com/yourorg/grips
 
 ---
 
-## 10. Quick Start (Manual Setup for v0.0.1)
+## 11. Quick Start (Manual Setup for v0.0.1)
 
 **To use GRIPS in a new project**:
 
@@ -653,9 +767,26 @@ mkdir -p specs/implementation-plan/qa specs/implementation-plan/adr
 
 3. Create METHODOLOGY.md in project root pointing to this file
 
-4. Add `@METHODOLOGY.md` to your project's CLAUDE.md or AGENTS.md
+4. Create PROJECT-STATUS.md:
+```markdown
+# Project Status
 
-5. Begin with requirements Q&A session!
+**Current Phase**: 0.0 (Prototype)
+**Current Stage**: Not started
+**Active Work**: Setting up GRIPS
+
+## Layer Synchronization
+- Requirements: Not started
+- Design: Not started
+- Implementation Plan: Not started
+
+## Next Steps
+1. Begin requirements Q&A session
+```
+
+5. Add `@METHODOLOGY.md` to your project's CLAUDE.md or AGENTS.md
+
+6. Begin with requirements Q&A session!
 
 ---
 
