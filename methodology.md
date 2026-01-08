@@ -576,7 +576,13 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
 6. Accept and use Critic Markup format for reviews
 7. Avoid code fences in specs documents except when absolutely necessary (they interfere with markdown editors that support Critic Markup)
 8. Never include actual code in implementation plans
-9. Keep status tracking current and accurate
+9. **Maintain PROJECT-STATUS.md continuously** with sufficient detail to resume work after interruption:
+   - Update current phase and stage whenever they change
+   - Document active work with enough context to resume
+   - List outstanding tasks with full details of what needs to be done
+   - When removing feedback markup (like Critic Markup), preserve the task details in PROJECT-STATUS.md
+   - Track layer synchronization status
+   - Document recent Q&A sessions and their outcomes
 10. Follow the step-by-step layer workflow
 11. Document all significant decisions in Q&A sessions or ADRs
 
