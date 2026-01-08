@@ -39,7 +39,7 @@ This is similar to CASE (Computer-Aided Software Engineering) tools from the 199
 
 ## 2. Directory Structure
 
-### ==2.1 Project Structure==^[do not dictate the src and test directories in the structure, as the code structure is completely flexible to conform to what the language platform and the project require. Include a note to this effect following this tree.]
+### 2.1 Project Structure
 
 Every GRIPS project has this structure:
 
@@ -74,6 +74,8 @@ project-root/
 └── tests/                      # Tests (language-specific location)
 ```
 
+**Note**: The `src/` and `tests/` directories shown above are examples only. The actual code structure is completely flexible and should conform to the conventions of your language, platform, and project requirements. For example, a Go project might use different package structures, a Swift project might have Xcode-specific organization, and a Python project might use different module layouts.
+
 ### 2.2 File Organization Rules
 
 1. **Start Simple**: Begin with single files (requirements.md, design.md, implementation-plan.md)
@@ -91,7 +93,7 @@ project-root/
 - ADRs
 - METHODOLOGY.md (contains version reference)
 
-Code and tests live in language-specific standard locations ==and are version controlled separately from specs==^[This is vague and may not be what we intend. The grips docs are version controlled in the same repo with the code and tests, and are often committed in the same commits.
+Code and tests live in language-specific standard locations and are version controlled in the same repository as specs, often committed together in the same commits.
 
 ---
 
@@ -140,7 +142,7 @@ GRIPS organizes project artifacts into three layers, each with distinct concerns
 
 **Not Allowed**:
 - Implementation details
-- ==Technology choices==^[Clarification: Some technology choices are requirements concerns. For example if we are building an iOS app, the iOS platform is a requirement. Support for iPhone only vs iPhone and iPad is a requirement.]
+- Technology choices (except when the technology is a core requirement of the product itself, e.g., "must be an iOS app", "must support iPhone and iPad")
 - Code or code-like specifications
 - Internal configuration
 
@@ -166,14 +168,16 @@ GRIPS organizes project artifacts into three layers, each with distinct concerns
 
 #### Implementation Plan Layer (STEPS)
 
-**Purpose**: Provide ==step-by-step==^[We need another section about how to break down specs into promot steps in an implementation plan. This is either an expansion of this section or a major new section. Let's do a Q&A on this and devise how to give this guidance in the methodology.] executable prompts for agents
+**Purpose**: Provide step-by-step executable prompts for agents
+
+**TODO**: Needs expansion - see Q&A session for guidance on breaking down specs into prompt steps
 
 **Contents**:
 - Phased breakdown of work (phase-0-prototype, phase-1-mvp, etc.)
 - Step-by-step instructions for agents to execute
 - Task lists and verification checklists
 - Affected file lists (as context/scope, e.g., "Files Created:", "Files Modified:")
-- References to specific classes/functions/variables ==where needed==^[only where needed, as these are usually implementation concerns]
+- References to specific classes/functions/variables (sparingly - only when necessary for clarity, as these are usually implementation concerns)
 - Descriptions of what to implement
 - BUILD AND VERIFY sections with concrete verification steps
 
@@ -188,7 +192,7 @@ What belongs in which layer depends on what the product is and what problem it's
 **Examples**:
 - **CICD configuration**: Requirements (if building a CICD system) vs. Design/Implementation (if building a mobile app)
 - **Error handling strategy**: Design (for most products) vs. Requirements (if building an API integration product)
-- **JSON structures**: Implementation (usually) vs. Requirements (when integrating with ==existing external systems==^[which use JSON in a capacity important to state as requirements])
+- **JSON structures**: Implementation (usually) vs. Requirements (when integrating with existing external systems that use JSON in a way that's important to state as requirements)
 
 **Rule of thumb**: Ask "Is this a core feature of what we're building?" If yes, it belongs in requirements. If it's about how we build it, it belongs in design or lower.
 
@@ -211,10 +215,14 @@ Use established paradigms where applicable:
 
 ### 5.1 Workflow Stages
 
-==GRIPS==^[Each phase of a GRIPS project follows this] follows a structured workflow with distinct ==stages==^[Add instructions about trying to railroad the human, or rather project manage the human, through the process. Suggest starting with a Q&A session, etc. Keep track of where in the process we are, including the current phase and stage. Always be aware of the current and next steps and try to encourage the human to follow the methodology. When something new comes up, whether it's an idea or a problem, try to guide the human though the process of breaking it into phases, selecting proper scope for each phase, helping them decide what to include, to minimize the size of each phase and maximize the value of each phase. I think we need a new section about this ]:
+Each phase of a GRIPS project follows a structured workflow with distinct stages:
+
+**TODO**: Needs new section on agent project management and phase guidance - see Q&A session
 
 #### Stage 1: Q&A
-- Conduct question-and-answer ==sessions==^[Lets expand on how to do this. The session should be done one question at a time, until all the questions are answered and the details are clear enough to proceed to a draft.] to understand requirements/design/implementation needs
+- Conduct question-and-answer sessions to understand requirements/design/implementation needs
+- **Process**: Ask one question at a time, document the answer, then proceed to the next question
+- Continue until all questions are answered and details are clear enough to proceed to drafting
 - Document all Q&A in `specs/{layer}/qa/{version}-{topic}.md`
 - Update continuously as questions are answered
 
@@ -254,10 +262,11 @@ Execute Implementation (write actual code)
 
 Changes can originate at any layer and must propagate through all affected layers:
 
-**Upward Flow** (Bug/code ==issue==^[For bug fix xes during verification, the implementation plan should not normally need to change unless a decision was made to implement something new. Same goes for design and requirements ]discovered):
+**Upward Flow** (Bug/code issue discovered):
 ```
-Code →Implementation Plan → Design → Requirements
+Code → Implementation Plan → Design → Requirements
 ```
+**Note**: Bug fixes during verification often don't require propagation to higher layers. Only propagate upward when the fix reveals a decision that changes the implementation plan, design, or requirements.
 
 **Downward Flow** (New requirement):
 ```
@@ -269,7 +278,9 @@ Requirements → Design → Implementation Plan → Code
 Requirements ← Design → Implementation Plan → Code
 ```
 
-**Agent Responsibility**: Before starting work, the agent must explicitly identify the change origin layer to determine ==propagation==^[we need to track propagation status somehow ] direction.
+**Agent Responsibility**: Before starting work, the agent must explicitly identify the change origin layer to determine propagation direction.
+
+**Tracking Propagation**: Document propagation status in PROJECT-STATUS.md under "Layer Synchronization" to track which layers have been updated and which still need updates.
 
 ### 5.4 Two-Path Workflow
 
@@ -280,7 +291,7 @@ When no Q&A session is needed (change is obvious or already clarified):
 2. Commit in one commit
 3. Done
 
-**Example**: ==Fixing a typo in an error message==^[Not to attack your example, but a typo or error message should not cause propagation outside of the code]- update code, update implementation plan, update design docs as needed, commit all together.
+**Example**: Updating a function signature that's already documented in the implementation plan - update code, update implementation plan reference, commit all together.
 
 #### Path 2: Complex Changes Requiring Spec Updates
 
@@ -562,11 +573,12 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
 3. Determine propagation direction (up, down, or both)
 4. For complex changes, conduct Q&A session first
 5. Update all affected layers
-6. Accept and use ==Critic Markup==^[It's also important to avoid using code fences in all specs documents, except in very limited situations, because they interfere with markdown editors that support critic m] format for reviews
-7. Never include actual code in implementation plans
-8. Keep status tracking current and accurate
-9. Follow the step-by-step layer workflow
-10. Document all significant decisions in Q&A sessions or ADRs
+6. Accept and use Critic Markup format for reviews
+7. Avoid code fences in specs documents except when absolutely necessary (they interfere with markdown editors that support Critic Markup)
+8. Never include actual code in implementation plans
+9. Keep status tracking current and accurate
+10. Follow the step-by-step layer workflow
+11. Document all significant decisions in Q&A sessions or ADRs
 
 **When drafting documents**:
 
