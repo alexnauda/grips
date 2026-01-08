@@ -752,6 +752,16 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
 - Recent Q&A sessions and their status
 - Approval gates passed
 
+**Strictly Forbidden**:
+- Release notes or change logs (what was added in commits)
+- Completed items in "Next Steps" or "Outstanding Work"
+- Detailed feature lists or "What's Included" sections
+- Temporal narrative history (use git log for history)
+- Milestones with detailed descriptions
+- Any content that duplicates information available in git history or spec files
+
+**Purpose**: PROJECT-STATUS.md answers "Where are we now and what's next?" It is NOT a changelog, release notes, or project history. Keep it minimal and forward-looking.
+
 **Example**:
 ```markdown
 # Project Status
@@ -833,13 +843,15 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
 6. Accept and use Critic Markup format for reviews
 7. Avoid code fences in specs documents except when absolutely necessary (they interfere with markdown editors that support Critic Markup)
 8. Never include actual code in implementation plans
-9. **Maintain PROJECT-STATUS.md continuously** with sufficient detail to resume work after interruption:
+9. **Maintain PROJECT-STATUS.md continuously** - keep it minimal and forward-looking:
    - Update current phase and stage whenever they change
-   - Document active work with enough context to resume
-   - List outstanding tasks with full details of what needs to be done
-   - When removing feedback markup (like Critic Markup), preserve the task details in PROJECT-STATUS.md
+   - Document what's currently being worked on (1-2 sentences)
+   - List next steps (upcoming tasks, not completed ones)
    - Track layer synchronization status
-   - Document recent Q&A sessions and their outcomes
+   - Document recent Q&A sessions and approval gates passed
+   - **DO NOT** include release notes, change logs, detailed feature lists, or completed work
+   - **DO NOT** duplicate information available in git history or spec files
+   - Keep it concise - it answers "Where are we now and what's next?"
 10. Follow the step-by-step layer workflow
 11. Document all significant decisions in Q&A sessions or ADRs
 
