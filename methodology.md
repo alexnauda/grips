@@ -1,4 +1,4 @@
-# GRIPS Methodology v0.0.1
+# GRIPS Methodology v0.0.2-dev
 
 **Guided Requirements Implementation Planning System**
 
@@ -45,7 +45,7 @@ Every GRIPS project has this structure:
 
 ```
 project-root/
-├── METHODOLOGY.md              # Points to GRIPS version in ~/.grips/
+├── methodology.md              # Points to GRIPS version in ~/.grips/
 ├── PROJECT-STATUS.md           # Project/phase-level status tracking
 ├── specs/
 │   ├── requirements/
@@ -91,7 +91,7 @@ project-root/
 - All documents in specs/
 - Q&A sessions
 - ADRs
-- METHODOLOGY.md (contains version reference)
+- methodology.md (contains version reference)
 
 Code and tests live in language-specific standard locations and are version controlled in the same repository as specs, often committed together in the same commits.
 
@@ -1006,7 +1006,7 @@ Projects using GRIPS pin to a specific methodology version. Methodology files ar
 ~/.grips/{version}/methodology.md
 ```
 
-Projects reference the methodology via a `METHODOLOGY.md` file:
+Projects reference the methodology via a `methodology.md` file:
 
 ```markdown
 # GRIPS Methodology
@@ -1082,7 +1082,7 @@ mkdir -p specs/implementation-plan/qa specs/implementation-plan/adr
 {Minimum viable product}
 ```
 
-3. Create METHODOLOGY.md in project root pointing to this file
+3. Create methodology.md in project root pointing to this file
 
 4. Create PROJECT-STATUS.md:
 ```markdown
@@ -1101,7 +1101,7 @@ mkdir -p specs/implementation-plan/qa specs/implementation-plan/adr
 1. Begin requirements Q&A session
 ```
 
-5. Add `@METHODOLOGY.md` to your project's CLAUDE.md or AGENTS.md
+5. Add `@methodology.md` to your project's CLAUDE.md or AGENTS.md
 
 6. Begin with requirements Q&A session!
 
