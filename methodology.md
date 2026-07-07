@@ -1116,4 +1116,4 @@ mkdir -p specs/implementation-plan/qa specs/implementation-plan/adr
 
 ---
 
-**End of GRIPS Methodology v0.0.1**
+**End of GRIPS Methodology v0.0.2-dev**
