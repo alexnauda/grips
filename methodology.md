@@ -84,6 +84,7 @@ project-root/
 4. **Outline Numbering**: All sections within documents use outline numbering
 5. **Phase Versioning**: Use semantic-style versioning for phases (0.0 = prototype, 1.0 = MVP, 2.0+ = expansion)
 6. **Q&A and ADR Versioning**: Use three-part versioning (0.0.1, 0.0.2, 1.0.1, etc.) for multiple sessions within a phase
+7. **Retire Absorbed Source Material**: A project sometimes starts from a pre-existing informal document (a design doc, brief, or notes file) used as input to the Requirements/Design Q&A process. Once its content is fully represented in the proper layer(s), delete it from the working tree rather than leaving it in place — a stray document duplicating already-migrated content violates Single Source of Truth (1.2) even though nothing is technically wrong with it. Git history preserves it if it's ever needed again.
 
 ### 2.3 Version Control
 
@@ -771,6 +772,10 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
 - Temporal narrative history (use git log for history)
 - Milestones with detailed descriptions
 - Any content that duplicates information available in git history or spec files
+- Technical findings, root causes, or gotchas discovered during implementation — even ones
+  worth remembering long-term. These belong in an ADR in the layer they constrain (see 8.2),
+  not in status narrative. If a finding feels durable enough to write a paragraph about, that
+  feeling is the signal it belongs in an ADR instead of here.
 
 **Key Distinction**:
 - ✅ ALLOWED: Incomplete tasks with detailed context (needed for resumability)
@@ -883,7 +888,11 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
    - **DO NOT** duplicate information available in git history or spec files
    - **Key distinction**: Detailed context for INCOMPLETE work (resumability) vs completed work (git history)
 10. Follow the step-by-step layer workflow
-11. Document all significant decisions in Q&A sessions or ADRs
+11. Document all significant decisions in Q&A sessions or ADRs — this includes technical
+    constraints or gotchas discovered mid-implementation that will bind future work (e.g. a
+    non-obvious registration/wiring requirement, a platform limitation). A durable technical
+    finding belongs in an ADR in the layer it constrains, never in PROJECT-STATUS.md
+    narrative, even when it feels like useful context worth preserving
 
 **When drafting documents**:
 
@@ -1107,4 +1116,4 @@ mkdir -p specs/implementation-plan/qa specs/implementation-plan/adr
 
 ---
 
-**End of GRIPS Methodology v0.0.1**
+**End of GRIPS Methodology v0.0.2-dev**
