@@ -9,7 +9,7 @@
 - Design: Not applicable (methodology is the product)
 - Implementation Plan: Not applicable (methodology is the product)
 
-## Recent Activity
+## Sessions & Gates
 - Q&A 0.0.1: Complete (grips-methodology.md)
 - Q&A 0.0.2: Complete (methodology-refinements.md)
 - Q&A 0.0.3: Complete (implementation-plan-guidance.md)
