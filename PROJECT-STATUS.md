@@ -2,7 +2,7 @@
 
 **Current Phase**: 0.0 (Prototype - GRIPS Methodology Development)
 **Current Stage**: Requirements - Implementation
-**Active Work**: Agent project management and phase guidance section
+**Active Work**: Q&A 0.0.5 — keeping project files clean (preventing agents from littering status/spec files)
 
 ## Layer Synchronization
 - Requirements (methodology.md): In progress
@@ -13,6 +13,8 @@
 - Q&A 0.0.1: Complete (grips-methodology.md)
 - Q&A 0.0.2: Complete (methodology-refinements.md)
 - Q&A 0.0.3: Complete (implementation-plan-guidance.md)
+- Q&A 0.0.4: Started, deferred (agent-project-management.md)
+- Q&A 0.0.5: In progress (keeping-project-files-clean.md)
 - Requirements approval gate: v0.0.1 passed
 
 ## Outstanding Work
