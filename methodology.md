@@ -753,16 +753,16 @@ GRIPS uses two levels of status tracking:
 
 #### Project/Phase-Level Status (PROJECT-STATUS.md)
 
-Track overall project progress in `PROJECT-STATUS.md` at project root:
+Track overall project progress in `PROJECT-STATUS.md` at project root. The file uses a **closed template**: it permits exactly the sections below and nothing else. Content that does not fit one of these sections does not belong in the file — route it to its home (see Content Routing, below). A closed schema is what keeps the file from accreting narrative; an open-ended "put status here" remit is what invites it.
 
-**Required Contents**:
-- Current phase and stage (e.g., "Phase 0.0, Requirements Review")
-- What's currently being worked on
-- What's next
-- Layer synchronization status (e.g., "Requirements updated in commit abc123, design not yet synced")
-- Recent Q&A sessions and their status
-- Approval gates passed
-- **Outstanding work** with sufficient context to resume - include what needs to be done, why, and any critical context needed to complete the work
+**Permitted Sections** (the only sections allowed):
+1. **Header** — current phase, current stage, and active work (one to two sentences). Forward-looking only.
+2. **Layer Synchronization** — which layers are updated, in sync, or pending (e.g., "Requirements updated in commit abc123, design not yet synced").
+3. **Outstanding Work** — incomplete items only, with enough context to resume. Where a tracker (such as GitHub issues) exists, reference each item by number and a one-line status; do not restate the tracked item's full description here. Reserve inline resume-context for work too granular or ephemeral to warrant a tracked issue.
+4. **Next Steps** — a short ordered list of what comes next. Incomplete items only.
+5. **Sessions & Gates** — an index of Q&A and ADR sessions with their status, and approval gates passed. This is state, not narrative: session names and their statuses, never a log of what was accomplished.
+
+**Meta-rule**: These five sections are the whole file. There is no "Recent Activity," changelog, or "what was accomplished" section under any name. A standing heading that invites a running list of completed work regenerates that list no matter how often it is pruned, so the heading itself is not permitted — the legitimate half of such a list (which sessions and gates exist, and their state) lives in Sessions & Gates.
 
 **Strictly Forbidden**:
 - Release notes or change logs (what was added in commits, accomplishments)
@@ -771,11 +771,20 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
 - Detailed feature lists or "What's Included" sections
 - Temporal narrative history (use git log for history)
 - Milestones with detailed descriptions
-- Any content that duplicates information available in git history or spec files
+- Any content that duplicates information available in git history, spec files, or a tracked issue
 - Technical findings, root causes, or gotchas discovered during implementation — even ones
   worth remembering long-term. These belong in an ADR in the layer they constrain (see 8.2),
   not in status narrative. If a finding feels durable enough to write a paragraph about, that
   feeling is the signal it belongs in an ADR instead of here.
+- Diary or process narrative — feelings, reflections, or how a session went. This belongs in the
+  git commit message; GRIPS hosts no journal.
+
+**Content Routing**: Every kind of content an agent is tempted to add has exactly one home. When the urge is to write something that is not forward-looking state, route it there rather than parking it in status:
+- Completed work, "what changed," or an accomplishment log → the git commit message.
+- Outstanding or incomplete work → the issue tracker, referenced from Outstanding Work as a pointer (number plus a one-line status).
+- A durable technical finding, gotcha, or decision → an ADR in the layer it constrains.
+- Process or diary narrative → the git commit message; GRIPS hosts no journal.
+- Current phase, stage, active work, next steps, layer synchronization, and the session/gate index → PROJECT-STATUS.md itself.
 
 **Key Distinction**:
 - ✅ ALLOWED: Incomplete tasks with detailed context (needed for resumability)
@@ -796,20 +805,21 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
 - Design: Not started
 - Implementation Plan: Not started
 
-## Recent Activity
+## Sessions & Gates
 - Q&A 0.0.1: Complete
 - Q&A 0.0.2: Complete
 - Requirements approval gate: Passed
 
 ## Outstanding Work
 
-### API Authentication Strategy
-**What's Needed**: Resolve authentication approach for external API integration
-**Context**: Reviewer feedback identified gap in requirements - API auth not specified
+- #42 API authentication strategy — OAuth vs API key vs JWT still undecided; blocks design §3.2
+
+### Wiktionary parser shape (no tracked issue yet)
+**What's Needed**: Confirm the JSON structure varies by language before designing the parser
+**Context**: Too exploratory to warrant an issue; captured here for resume only
 **Tasks**:
-- Additional Q&A session to decide: OAuth 2.0 vs API key vs JWT
-- Update requirements.md section 3.2 with chosen approach
-- Propagate decision to design layer
+- Spot-check three languages' Wiktionary dumps
+- If structure varies, open an issue and move this out of status
 
 ## Next Steps
 1. Complete requirements review cycle
@@ -880,12 +890,13 @@ Track overall project progress in `PROJECT-STATUS.md` at project root:
    - **Outstanding Work**: List incomplete tasks with full context needed to resume
      - Include what needs to be done, why, and critical context
      - This is where detailed task information belongs (for resumability)
+     - Where a tracker exists, reference issues by number plus a one-line status — do not restate the issue's body in status
    - **Next Steps**: List upcoming tasks (brief, no completed items)
    - Track layer synchronization status
-   - Document recent Q&A sessions and approval gates passed
-   - **DO NOT** include release notes, change logs, or completed accomplishments
+   - Maintain the **Sessions & Gates** index (Q&A/ADR session statuses and approval gates passed) — state only, never an accomplishment log
+   - **DO NOT** include release notes, change logs, or completed accomplishments, or a "Recent Activity" section under any name
    - **DO NOT** mark items as "✅ COMPLETE" in Outstanding Work (remove them when done)
-   - **DO NOT** duplicate information available in git history or spec files
+   - **DO NOT** duplicate information available in git history, spec files, or a tracked issue
    - **Key distinction**: Detailed context for INCOMPLETE work (resumability) vs completed work (git history)
 10. Follow the step-by-step layer workflow
 11. Document all significant decisions in Q&A sessions or ADRs — this includes technical
