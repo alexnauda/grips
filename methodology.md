@@ -23,6 +23,8 @@ This is similar to CASE (Computer-Aided Software Engineering) tools from the 199
 5. **Agent-Guided Evolution**: Agents draft; humans review and approve
 6. **Structured Q&A Process**: All major changes begin with documented Q&A sessions
 7. **Phase-Based Implementation**: Work proceeds through prototype → MVP → expansions
+8. **Harness and Model Agnostic**: The methodology is portable and self-sufficient; any harness-specific automation is an optional, separable adapter (see 1.4)
+9. **Context Hygiene**: Isolate bounded execution work from the durable control channel so its noise does not accumulate in specs or status (see 5.9)
 
 ### 1.3 When to Use GRIPS
 
@@ -34,6 +36,15 @@ This is similar to CASE (Computer-Aided Software Engineering) tools from the 199
 
 **Not yet supported:**
 - Adding GRIPS to existing projects with established codebases (deferred to future versions)
+
+### 1.4 Two-Layer Architecture: Methodology and Adapters
+
+GRIPS is organized in two layers so that it stays portable while still allowing harness-specific automation:
+
+- **Layer 1 — the methodology**: the portable, harness- and model-agnostic specification in this document and a project's specs. It is the single source of truth and must be fully executable by any capable human-and-agent pair with nothing beyond a text editor and version control.
+- **Layer 2 — adapters**: optional, harness-specific operationalizations of Layer 1 — for example, a skill that runs a methodology procedure, or a hook that enforces a constraint. Each adapter implements Layer 1; Layer 1 never depends on an adapter.
+
+**Invariant**: removing every adapter leaves a fully working methodology. Adapters accelerate compliance; they do not define it. Adapters live in a clearly separated location (a dedicated directory or a sibling repository) and are never interleaved with the methodology text. A project may adopt any, all, or none of them.
 
 ---
 
@@ -652,6 +663,19 @@ When encountering conflicts or inconsistencies:
 - Alternative: Bug fixes and small tweaks can be separate commits as guided by human
 
 **Commit Message Format**: Follow project conventions (often Conventional Commits)
+
+### 5.9 Control Channel and Execution Channels
+
+To keep the durable working session clean, GRIPS distinguishes two kinds of agent activity:
+
+- **Control channel**: the main human-with-agent session where decisions are made, Q&A is conducted, approvals are given, status is maintained, and changes are propagated across layers. Its context is long-lived and worth protecting.
+- **Execution channels**: bounded work that produces a discrete deliverable — implementing an implementation-plan Step, conducting research, and, case-by-case, drafting. This work generates large volumes of transcript that carry no lasting value once the deliverable exists.
+
+**Isolate execution from the control channel.** Delegate execution to a sub-agent where the harness provides one, or to a separate session otherwise, so the execution transcript never accumulates in the control channel. Only three things return: the deliverable itself, a concise summary, and any decisions that must be recorded in a Q&A session or an ADR. The raw execution transcript does not return.
+
+**Scope**: delegate implementation and research by default — they are the largest sources of context noise and each yields a deliverable that summarizes cleanly. Treat drafting case-by-case: drafting spec prose often benefits from the control channel's accumulated context and close human interaction, so it is frequently better kept in the control channel. This is a recommendation, not a mandate; apply it where it reduces noise without losing signal.
+
+This principle is the structural companion to the PROJECT-STATUS.md discipline in 6.3. Much status and diary litter originates in the session's urge to record what it did; when execution happens in an isolated channel, that urge is satisfied and discarded within the execution channel, and the control channel and status file stay clean by construction.
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Current Phase**: 0.0 (Prototype - GRIPS Methodology Development)
 **Current Stage**: Requirements - Implementation
-**Active Work**: Q&A 0.0.5 — keeping project files clean (preventing agents from littering status/spec files)
+**Active Work**: Q&A 0.0.6 — harness-agnostic architecture (methodology vs. optional adapters) and context-hygiene theme (sub-agent delegation)
 
 ## Layer Synchronization
 - Requirements (methodology.md): In progress
@@ -14,7 +14,8 @@
 - Q&A 0.0.2: Complete (methodology-refinements.md)
 - Q&A 0.0.3: Complete (implementation-plan-guidance.md)
 - Q&A 0.0.4: Started, deferred (agent-project-management.md)
-- Q&A 0.0.5: In progress (keeping-project-files-clean.md)
+- Q&A 0.0.5: Complete, integrated (keeping-project-files-clean.md)
+- Q&A 0.0.6: In progress (architecture-context-hygiene.md)
 - Requirements approval gate: v0.0.1 passed
 
 ## Outstanding Work
@@ -33,7 +34,7 @@
   - Encouraging adherence to methodology while remaining helpful
 
 ## Next Steps
-1. Start Q&A 0.0.4 (Agent project management and phase guidance)
-2. Draft new section on agent project management
-3. Integrate section into methodology
+1. Conduct Q&A 0.0.6 (architecture + context hygiene)
+2. Un-park Q&A 0.0.4 (agent project management)
+3. Sync this project's CLAUDE.md to the current methodology (closed template; stale "Next: 0.0.4")
 4. Review for v0.0.2 approval gate
