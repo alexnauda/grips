@@ -1,4 +1,4 @@
-# GRIPS Methodology v0.0.2-dev
+# GRIPS Methodology v0.0.3-dev
 
 **Guided Requirements Implementation Planning System**
 
@@ -115,6 +115,7 @@ To ensure consistent understanding across GRIPS projects, these terms have speci
 | **Critic Markup** | Standard markdown format for human review feedback on agent-drafted documents. |
 | **ADR** | Architecture Decision Record - documents significant architectural or design decisions. |
 | **Propagation** | Process of updating all affected layers when a change is made (bidirectional: up, down, or both). |
+| **Track** | Independently progressing unit of work (a phase's layer stage, a feature, or an incident response) with its own branch or worktree and exactly one owning agent session. Concurrent tracks share one spec tree; each owns its own entries in PROJECT-STATUS.md. |
 
 **Not used in GRIPS**:
 - **Sprint**, **Iteration** - GRIPS uses Phases and Stages instead
@@ -653,6 +654,43 @@ When encountering conflicts or inconsistencies:
 
 **Commit Message Format**: Follow project conventions (often Conventional Commits)
 
+### 5.9 Multi-Track Development
+
+A project runs **single-track** when one session advances one unit of work at a time. It runs **multi-track** when several units of work progress concurrently, typically in separate git worktrees with a different agent session driving each one. Multi-track work shares one spec tree and one PROJECT-STATUS.md, so the methodology fixes who writes what and where concurrent writes land.
+
+#### 5.9.1 Definition of a Track
+
+A **track** is an independently progressing unit of work with three properties:
+
+1. **Scope**: exactly one unit of work, such as a phase's layer stage (Phase 1 design), a single feature within a phase, or an incident response
+2. **Isolation**: its own branch, and its own worktree whenever sessions run concurrently
+3. **Ownership**: exactly one owning agent session, which is the track's **single writer**
+
+Work lacking all three properties is not a track: a one-line correction committed directly to the mainline is a commit, and needs no track entry.
+
+**Track name**: each track has a short, stable, kebab-case name (`auth-mvp`, `rate-limit`, `incident-stale-cache`). The same name identifies the track's branch, its worktree, its entries in PROJECT-STATUS.md, and its pull request. Names are not reused after a track completes.
+
+#### 5.9.2 Track Rules
+
+1. **Single writer per track**: only the owning session edits that track's status entries and branch. An agent that finds a problem in another track's entry reports it to the human or to that track's owner; it does not edit the entry.
+2. **Self-contained entries**: a track's status entry carries everything a reader needs to locate the work (track name, branch or worktree, current stage, next gate, links). No entry depends on a sentence owned by another track.
+3. **Cross-track dependencies are recorded on both sides, each by its own writer**: the blocked track names its blocker in its own entry, and the blocking track names what it blocks in its own entry.
+4. **Approval gates are per track**: each track passes its own layer gates (5.1 Stage 4). One track's approval never advances another.
+5. **Shared spec sections serialize**: when two tracks need to change the same section of requirements.md, design.md, or an implementation-plan file, one track owns the change and the other rebases onto it. Two tracks editing one spec section concurrently is a planning error, resolved by the human.
+6. **Completion removes the entry**: the track that completes its work removes its own status entries in the same change that merges the track. A completed track leaves no residue in status; its history lives in git and in its pull request.
+
+#### 5.9.3 Merge Behavior for PROJECT-STATUS.md
+
+PROJECT-STATUS.md is written for **line-disjoint construction**: every line belongs to exactly one track, and a track adds, edits, and removes only its own lines. Tracks that follow the single-writer rule rebase and merge without textual conflict even when several of them touch the file in the same period.
+
+**A merge conflict in PROJECT-STATUS.md is a structure violation, not a content decision.** It means one of the following happened:
+
+- A track edited a line it does not own
+- Two tracks claimed the same track name or the same entry
+- A track wrote shared narrative (one sentence covering several tracks) where per-track entries are required
+
+Resolution restores structure rather than blending prose: keep both tracks' entries verbatim, re-establish one entry per track, and correct the writer that strayed. Agents must not resolve such a conflict by summarizing two tracks into a single line, and must not drop a track's entry to make a merge succeed.
+
 ---
 
 ## 6. Implementation Plans & Phasing
@@ -756,8 +794,8 @@ GRIPS uses two levels of status tracking:
 Track overall project progress in `PROJECT-STATUS.md` at project root. The file uses a **closed template**: it permits exactly the sections below and nothing else. Content that does not fit one of these sections does not belong in the file — route it to its home (see Content Routing, below). A closed schema is what keeps the file from accreting narrative; an open-ended "put status here" remit is what invites it.
 
 **Permitted Sections** (the only sections allowed):
-1. **Header** — current phase, current stage, and active work (one to two sentences). Forward-looking only.
-2. **Layer Synchronization** — which layers are updated, in sync, or pending (e.g., "Requirements updated in commit abc123, design not yet synced").
+1. **Header** — current phase, plus the active work expressed as one entry per **track** (5.9): the track's current stage and what it is doing. A single-track project states this as a Current Stage line and a one-to-two-sentence Active Work line. Forward-looking only.
+2. **Layer Synchronization** — which layers are updated, in sync, or pending (e.g., "Requirements updated in commit abc123, design not yet synced"), one line per track per layer while more than one track is active.
 3. **Outstanding Work** — incomplete items only, with enough context to resume. Where a tracker (such as GitHub issues) exists, reference each item by number and a one-line status; do not restate the tracked item's full description here. Reserve inline resume-context for work too granular or ephemeral to warrant a tracked issue.
 4. **Next Steps** — a short ordered list of what comes next. Incomplete items only.
 5. **Sessions & Gates** — an index of Q&A and ADR sessions with their status, and approval gates passed. This is state, not narrative: session names and their statuses, never a log of what was accomplished.
@@ -792,7 +830,15 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
 
 **Purpose**: PROJECT-STATUS.md answers "Where are we now and what's next?" It is NOT a changelog, release notes, or project history. Keep it minimal and forward-looking.
 
-**Example**:
+**Multi-Track Status Entries**: While more than one **track** (5.9) is active, the file carries one entry per track so that concurrent edits from different worktrees touch disjoint lines. The closed template is unchanged: the track list belongs to the header section, and the permitted sections remain five.
+
+- **Active Tracks** (part of the header): one bullet per track, in the form "**{track-name}** (branch {branch}, worktree {path}): {layer and stage}; next gate: {gate}; {links}". Each bullet is self-contained and is written only by that track's owning session.
+- **Layer Synchronization**: one line per track per layer, prefixed with the track name and grouped by track. A layer that no active track has touched needs no line.
+- **Outstanding Work** and **Next Steps**: an item belonging to a track is prefixed with the track name; a project-level item carries no prefix.
+- **Sessions & Gates**: a session or gate belonging to a track names the track alongside it, so gate state is unambiguous when tracks pass the same layer's gate at different times.
+- A completing track deletes its own Active Tracks bullet, its Layer Synchronization lines, and its track-prefixed items in the change that merges the track.
+
+**Example (single track)**:
 ```markdown
 # Project Status
 
@@ -826,6 +872,41 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
 2. Pass requirements approval gate
 3. Begin design Q&A session
 ```
+
+**Example (three concurrent tracks)**:
+```markdown
+# Project Status
+
+**Current Phase**: 1.0 (MVP)
+
+## Active Tracks
+- **auth-mvp** (branch track/auth-mvp, worktree ../app-auth-mvp): Design, Review Cycle 2; next gate: design approval; blocks rate-limit; Q&A 1.0.1, issue #42
+- **rate-limit** (branch track/rate-limit, worktree ../app-rate-limit): Implementation, Feature 3 Step 3.2; next gate: Feature 3 checkpoint; blocked by auth-mvp design approval; issue #57, PR #61
+- **incident-stale-cache** (branch track/incident-stale-cache): Implementation, fix verified; next gate: upward propagation review; issue #64
+
+## Layer Synchronization
+- auth-mvp / Requirements: In sync (commit abc123)
+- auth-mvp / Design: Updated (commit def456), in review
+- rate-limit / Design: In sync (commit 8ac21f0)
+- rate-limit / Implementation Plan: Updated (commit 9bd77e1)
+- incident-stale-cache / Implementation Plan: Pending, propagation from the code fix not yet drafted
+
+## Sessions & Gates
+- Q&A 1.0.1 (auth-mvp): In progress
+- Q&A 1.0.2 (rate-limit): Complete
+- Design approval gate (rate-limit): Passed
+
+## Outstanding Work
+- auth-mvp: #42 token refresh strategy undecided; blocks design §4.1
+- rate-limit: #57 burst allowance needs a measured baseline before the checkpoint
+
+## Next Steps
+1. auth-mvp: close Q&A 1.0.1 and pass the design approval gate
+2. rate-limit: complete Feature 3 checkpoint verification
+3. incident-stale-cache: propagate the fix to the implementation plan, then close the track
+```
+
+Each track edits only the lines carrying its own name, so the three sessions rebase onto one another without conflict, and closing a track deletes exactly its own lines.
 
 #### Implementation Step Status (Inline)
 
@@ -871,6 +952,7 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
 9. **Status is single source of truth** - no mixing with narrative history
 10. **All specs/ artifacts are version controlled**
 11. **Maintain PROJECT-STATUS.md** - keep project/phase-level status current
+12. **One writer per track** - a track edits only its own status entries, and a PROJECT-STATUS.md merge conflict is treated as a structure violation to repair, not prose to merge
 
 ### 8.2 Agent Instructions
 
@@ -893,6 +975,7 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
      - Where a tracker exists, reference issues by number plus a one-line status — do not restate the issue's body in status
    - **Next Steps**: List upcoming tasks (brief, no completed items)
    - Track layer synchronization status
+   - While other tracks are active (5.9), edit only your own track's entries, keep each entry self-contained, and delete your track's entries when it merges
    - Maintain the **Sessions & Gates** index (Q&A/ADR session statuses and approval gates passed) — state only, never an accomplishment log
    - **DO NOT** include release notes, change logs, or completed accomplishments, or a "Recent Activity" section under any name
    - **DO NOT** mark items as "✅ COMPLETE" in Outstanding Work (remove them when done)
@@ -1019,7 +1102,7 @@ specs/requirements/
 
 ## 10. GRIPS Methodology Versioning
 
-This document represents GRIPS Methodology version **0.0.1**.
+This document represents GRIPS Methodology version **0.0.3-dev**.
 
 Projects using GRIPS pin to a specific methodology version. Methodology files are stored in:
 ```
@@ -1042,7 +1125,7 @@ For more information, visit: https://github.com/yourorg/grips
 
 ---
 
-## 11. Quick Start (Manual Setup for v0.0.1)
+## 11. Quick Start (Manual Setup)
 
 **To use GRIPS in a new project**:
 
@@ -1127,4 +1210,4 @@ mkdir -p specs/implementation-plan/qa specs/implementation-plan/adr
 
 ---
 
-**End of GRIPS Methodology v0.0.2-dev**
+**End of GRIPS Methodology v0.0.3-dev**
