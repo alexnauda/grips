@@ -1,4 +1,4 @@
-# GRIPS Methodology v0.0.2-dev
+# GRIPS Methodology v0.0.3-dev
 
 **Guided Requirements Implementation Planning System**
 
@@ -115,6 +115,7 @@ To ensure consistent understanding across GRIPS projects, these terms have speci
 | **Critic Markup** | Standard markdown format for human review feedback on agent-drafted documents. |
 | **ADR** | Architecture Decision Record - documents significant architectural or design decisions. |
 | **Propagation** | Process of updating all affected layers when a change is made (bidirectional: up, down, or both). |
+| **Track** | Independently progressing unit of work (a phase's layer stage, a feature, or an incident response) with its own branch or worktree and exactly one owning agent session. Concurrent tracks share one spec tree; each owns one contiguous status block in PROJECT-STATUS.md. |
 
 **Not used in GRIPS**:
 - **Sprint**, **Iteration** - GRIPS uses Phases and Stages instead
@@ -653,6 +654,45 @@ When encountering conflicts or inconsistencies:
 
 **Commit Message Format**: Follow project conventions (often Conventional Commits)
 
+### 5.9 Multi-Track Development
+
+A project runs **single-track** when one session advances one unit of work at a time. It runs **multi-track** when several units of work progress concurrently, typically in separate git worktrees with a different agent session driving each one. Multi-track work shares one spec tree and one PROJECT-STATUS.md, so the methodology fixes who writes what and where concurrent writes land.
+
+**A project that uses tracks carries the track-major form from its first track onward.** Status is arranged by track rather than by section: each track owns one contiguous block holding all of its status, and the shared sections hold only content that belongs to no track (6.3). A project with one declared track carries one block, and starting a second track adds a block rather than restructuring the file. Deferring the structure until a second track exists makes that second track's first act a rewrite of shared lines its sibling is concurrently editing, which is the conflict the structure exists to prevent.
+
+#### 5.9.1 Definition of a Track
+
+A **track** is an independently progressing unit of work with three properties:
+
+1. **Scope**: exactly one unit of work, such as a phase's layer stage (Phase 1 design), a single feature within a phase, or an incident response
+2. **Isolation**: its own branch, and its own worktree whenever sessions run concurrently
+3. **Ownership**: exactly one owning agent session, which is the track's **single writer**
+
+Work lacking all three properties is not a track: a one-line correction committed directly to the mainline is a commit, and needs no track entry.
+
+**Track name**: each track has a short, stable, kebab-case name (`auth-mvp`, `rate-limit`, `incident-stale-cache`). The same name identifies the track's branch, its worktree, its entries in PROJECT-STATUS.md, and its pull request. Names are not reused after a track completes.
+
+#### 5.9.2 Track Rules
+
+1. **Single writer per track**: only the owning session edits that track's status entries and branch. An agent that finds a problem in another track's entry reports it to the human or to that track's owner; it does not edit the entry.
+2. **Self-contained blocks**: a track's status block carries everything a reader needs to locate and resume the work (track name, branch or worktree, current stage, next gate, layer synchronization, sessions and gates, outstanding work, next steps, links). No line inside a block depends on a line outside it.
+3. **Cross-track dependencies are recorded on both sides, each by its own writer**: the blocked track names its blocker in its own block, and the blocking track names what it blocks in its own block.
+4. **Approval gates are per track**: each track passes its own layer gates (5.1 Stage 4). One track's approval never advances another.
+5. **Shared spec sections serialize**: when two tracks need to change the same section of requirements.md, design.md, or an implementation-plan file, one track owns the change and the other rebases onto it. Two tracks editing one spec section concurrently is a planning error, resolved by the human.
+6. **Completion removes the block**: the track that completes its work deletes its own status block whole in the same change that merges the track. A completed track leaves no residue in status; its history lives in git and in its pull request.
+
+#### 5.9.3 Merge Behavior for PROJECT-STATUS.md
+
+PROJECT-STATUS.md is written for **track-major, block-disjoint construction**: every line belongs either to exactly one track's block or to the project-level sections, and a track adds, edits, and removes only lines inside its own block. Tracks that follow the single-writer rule rebase and merge without textual conflict even when several of them touch the file in the same period, because their edits fall in different regions of it.
+
+**A merge conflict in PROJECT-STATUS.md is a structure violation, not a content decision.** It means one of the following happened:
+
+- A writer edited lines outside its own track's block
+- Two tracks claimed the same track name, and therefore the same block
+- Track-level status was written into a project-level section instead of the track's block
+
+Resolution restores ownership rather than blending prose: keep both tracks' blocks verbatim, move any leaked line back into the block that owns it, and correct the writer that strayed. Agents must not resolve such a conflict by summarizing two tracks into a single line, and must not drop a track's block to make a merge succeed.
+
 ---
 
 ## 6. Implementation Plans & Phasing
@@ -761,8 +801,11 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
 3. **Outstanding Work** — incomplete items only, with enough context to resume. Where a tracker (such as GitHub issues) exists, reference each item by number and a one-line status; do not restate the tracked item's full description here. Reserve inline resume-context for work too granular or ephemeral to warrant a tracked issue.
 4. **Next Steps** — a short ordered list of what comes next. Incomplete items only.
 5. **Sessions & Gates** — an index of Q&A and ADR sessions with their status, and approval gates passed. This is state, not narrative: session names and their statuses, never a log of what was accomplished.
+6. **Tracks** — one subsection per active **track** (5.9), each carrying all of that track's status. Permitted only in a project that uses tracks, and absent in a project that uses none.
 
-**Meta-rule**: These five sections are the whole file. There is no "Recent Activity," changelog, or "what was accomplished" section under any name. A standing heading that invites a running list of completed work regenerates that list no matter how often it is pruned, so the heading itself is not permitted — the legitimate half of such a list (which sessions and gates exist, and their state) lives in Sessions & Gates.
+**Track split rule**: In a project that uses tracks, sections 1 through 5 carry only project-level content, meaning content that belongs to no track; every piece of a track's status lives inside that track's subsection under Tracks. Stage, active work, layer synchronization, outstanding work, next steps, and sessions and gates are therefore split by owner, not duplicated: the project-level part stays in its section, and the track-level part lives in the track's block. A section left with no project-level content is omitted rather than kept empty.
+
+**Meta-rule**: These sections are the whole file: five in a project that uses no tracks, and six where the Tracks section is present. There is no "Recent Activity," changelog, or "what was accomplished" section under any name. A standing heading that invites a running list of completed work regenerates that list no matter how often it is pruned, so the heading itself is not permitted — the legitimate half of such a list (which sessions and gates exist, and their state) lives in Sessions & Gates.
 
 **Strictly Forbidden**:
 - Release notes or change logs (what was added in commits, accomplishments)
@@ -792,7 +835,17 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
 
 **Purpose**: PROJECT-STATUS.md answers "Where are we now and what's next?" It is NOT a changelog, release notes, or project history. Keep it minimal and forward-looking.
 
-**Example**:
+**Track Blocks**: A project that uses **tracks** (5.9) arranges status **track-major**: each track owns one contiguous block, and every part of that track's status lives inside it. The arrangement holds from the project's first track onward, so a second track adds its own block without touching the first.
+
+- **One block per track**, as a subsection of Tracks headed by the track name, written only by that track's owning session. The Tracks section follows the header and precedes the project-level sections, and blocks are ordered by track name.
+- **Declaring a track is a coordination point**: its block is created on the mainline when the track is declared, before the track's own work begins, so two tracks never insert a block at the same position.
+- Each block carries, in this order: branch and worktree, current stage and active work, next gate, cross-track dependencies, layer synchronization for the layers this track touches, sessions and gates this track owns, outstanding work, next steps, and links.
+- A block is self-contained: no line inside it depends on a line outside it, and no part of a track's status appears anywhere else in the file.
+- A track's block is deleted whole in the change that merges the track. Deleting the block is the entirety of a track's status cleanup.
+
+**Merge property**: because each track owns one contiguous region of the file, concurrent edits from different tracks are disjoint by construction and rebase cleanly. A conflict inside a track block means two writers touched one track, which is a violation of the single-writer rule (5.9.2) rather than a merge puzzle. A conflict in sections 1 through 5 means track content leaked out of its block. Both are repaired by restoring ownership, not by blending text.
+
+**Example (a project that uses no tracks)**:
 ```markdown
 # Project Status
 
@@ -826,6 +879,58 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
 2. Pass requirements approval gate
 3. Begin design Q&A session
 ```
+
+A project that uses tracks carries the form below instead, with one track block per declared track, including when it has declared only one.
+
+**Example (three concurrent tracks)**:
+```markdown
+# Project Status
+
+**Current Phase**: 1.0 (MVP)
+
+## Tracks
+
+### auth-mvp
+**Branch**: track/auth-mvp (worktree ../app-auth-mvp)
+**Stage**: Design, Review Cycle 2 on the token and session model
+**Next Gate**: design approval
+**Blocks**: rate-limit
+**Layer Synchronization**: Requirements in sync (commit abc123); Design updated (commit def456), in review
+**Sessions & Gates**: Q&A 1.0.1 in progress
+**Outstanding Work**: #42 token refresh strategy undecided; blocks design §4.1
+**Next Steps**: close Q&A 1.0.1, then pass the design approval gate
+**Links**: issue #42, PR #58
+
+### rate-limit
+**Branch**: track/rate-limit (worktree ../app-rate-limit)
+**Stage**: Implementation, Feature 3 Step 3.2
+**Next Gate**: Feature 3 checkpoint
+**Blocked By**: auth-mvp design approval
+**Layer Synchronization**: Design in sync (commit 8ac21f0); Implementation Plan updated (commit 9bd77e1)
+**Sessions & Gates**: Q&A 1.0.2 complete; design approval gate passed
+**Outstanding Work**: #57 burst allowance needs a measured baseline before the checkpoint
+**Next Steps**: complete Feature 3 checkpoint verification
+**Links**: issue #57, PR #61
+
+### incident-stale-cache
+**Branch**: track/incident-stale-cache
+**Stage**: Implementation, fix verified
+**Next Gate**: upward propagation review
+**Layer Synchronization**: Implementation Plan pending, propagation from the code fix not yet drafted
+**Next Steps**: propagate the fix to the implementation plan, then close the track
+**Links**: issue #64
+
+## Sessions & Gates
+- Requirements approval gate: Passed
+
+## Outstanding Work
+- #12 load-testing tool undecided; needed before Phase 2 scoping
+
+## Next Steps
+1. Scope Phase 2 once the MVP tracks merge
+```
+
+Each track edits only its own block, so the three sessions rebase onto one another without conflict, and closing a track deletes exactly one block. Layer Synchronization is absent here because no layer state belongs outside the tracks; the remaining sections carry only project-level items.
 
 #### Implementation Step Status (Inline)
 
@@ -871,6 +976,7 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
 9. **Status is single source of truth** - no mixing with narrative history
 10. **All specs/ artifacts are version controlled**
 11. **Maintain PROJECT-STATUS.md** - keep project/phase-level status current
+12. **One writer per track** - a track edits only its own status block, and a PROJECT-STATUS.md merge conflict is treated as a structure violation to repair, not prose to merge
 
 ### 8.2 Agent Instructions
 
@@ -893,6 +999,7 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
      - Where a tracker exists, reference issues by number plus a one-line status — do not restate the issue's body in status
    - **Next Steps**: List upcoming tasks (brief, no completed items)
    - Track layer synchronization status
+   - In a project that uses tracks (5.9), write your track's status inside your own track block only, keep that block self-contained, leave the project-level sections to project-level content, and delete the whole block when your track merges
    - Maintain the **Sessions & Gates** index (Q&A/ADR session statuses and approval gates passed) — state only, never an accomplishment log
    - **DO NOT** include release notes, change logs, or completed accomplishments, or a "Recent Activity" section under any name
    - **DO NOT** mark items as "✅ COMPLETE" in Outstanding Work (remove them when done)
@@ -1019,7 +1126,7 @@ specs/requirements/
 
 ## 10. GRIPS Methodology Versioning
 
-This document represents GRIPS Methodology version **0.0.1**.
+This document represents GRIPS Methodology version **0.0.3-dev**.
 
 Projects using GRIPS pin to a specific methodology version. Methodology files are stored in:
 ```
@@ -1042,7 +1149,7 @@ For more information, visit: https://github.com/yourorg/grips
 
 ---
 
-## 11. Quick Start (Manual Setup for v0.0.1)
+## 11. Quick Start (Manual Setup)
 
 **To use GRIPS in a new project**:
 
@@ -1127,4 +1234,4 @@ mkdir -p specs/implementation-plan/qa specs/implementation-plan/adr
 
 ---
 
-**End of GRIPS Methodology v0.0.2-dev**
+**End of GRIPS Methodology v0.0.3-dev**

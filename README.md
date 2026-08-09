@@ -95,7 +95,7 @@ project-root/
 
 ## Documentation
 
-- **[methodology.md](methodology.md)** - Complete GRIPS methodology (current: v0.0.2-dev)
+- **[methodology.md](methodology.md)** - Complete GRIPS methodology (current: v0.0.3-dev)
 - **[releases/](releases/)** - Stable released versions
 
 ## Version Pinning
@@ -105,7 +105,7 @@ Projects pin to a specific GRIPS methodology version and stay on that version in
 ## Current Status
 
 **Latest Stable Release**: v0.0.1
-**Development Version**: v0.0.2-dev
+**Development Version**: v0.0.3-dev
 
 This project is in active development. The methodology is being refined through real-world use and structured Q&A sessions.
 

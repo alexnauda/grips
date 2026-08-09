@@ -1,11 +1,19 @@
 # Project Status
 
 **Current Phase**: 0.0 (Prototype - GRIPS Methodology Development)
-**Current Stage**: Requirements - Implementation
-**Active Work**: Q&A 0.0.5 — keeping project files clean (preventing agents from littering status/spec files)
+
+## Tracks
+
+### methodology-0.0.3-multi-track
+**Branch**: methodology/0.0.3-dev-multi-track
+**Stage**: Requirements, Review Cycle 1 on the v0.0.3-dev multi-track guidance (methodology 5.9 and 6.3)
+**Next Gate**: v0.0.3 requirements approval
+**Layer Synchronization**: Requirements (methodology.md) updated on the track branch, in review
+**Sessions & Gates**: Q&A 0.0.6 in progress (multi-track-development.md)
+**Next Steps**: answer the Q&A 0.0.6 questions (track definition, track-list home, naming, version number), then revise the multi-track sections from those answers and from review feedback
+**Links**: https://github.com/alexnauda/grips/pull/4
 
 ## Layer Synchronization
-- Requirements (methodology.md): In progress
 - Design: Not applicable (methodology is the product)
 - Implementation Plan: Not applicable (methodology is the product)
 
@@ -14,7 +22,7 @@
 - Q&A 0.0.2: Complete (methodology-refinements.md)
 - Q&A 0.0.3: Complete (implementation-plan-guidance.md)
 - Q&A 0.0.4: Started, deferred (agent-project-management.md)
-- Q&A 0.0.5: In progress (keeping-project-files-clean.md)
+- Q&A 0.0.5: Complete (keeping-project-files-clean.md)
 - Requirements approval gate: v0.0.1 passed
 
 ## Outstanding Work
@@ -33,7 +41,5 @@
   - Encouraging adherence to methodology while remaining helpful
 
 ## Next Steps
-1. Start Q&A 0.0.4 (Agent project management and phase guidance)
-2. Draft new section on agent project management
-3. Integrate section into methodology
-4. Review for v0.0.2 approval gate
+1. Resume Q&A 0.0.4 (Agent project management and phase guidance)
+2. Draft and integrate the agent project management section
