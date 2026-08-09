@@ -1,11 +1,12 @@
 # Project Status
 
 **Current Phase**: 0.0 (Prototype - GRIPS Methodology Development)
-**Current Stage**: Requirements - Review Cycle
-**Active Work**: v0.0.3-dev multi-track development guidance (methodology 5.9 and 6.3); Q&A 0.0.6 answers pending
+
+## Active Tracks
+- **methodology-0.0.3-multi-track** (branch methodology/0.0.3-dev-multi-track): Requirements, Review Cycle 1 on the v0.0.3-dev multi-track guidance (methodology 5.9 and 6.3); next gate: v0.0.3 requirements approval; Q&A 0.0.6, https://github.com/alexnauda/grips/pull/4
 
 ## Layer Synchronization
-- Requirements (methodology.md): In progress
+- methodology-0.0.3-multi-track / Requirements (methodology.md): Updated on the track branch, in review
 - Design: Not applicable (methodology is the product)
 - Implementation Plan: Not applicable (methodology is the product)
 
@@ -15,7 +16,7 @@
 - Q&A 0.0.3: Complete (implementation-plan-guidance.md)
 - Q&A 0.0.4: Started, deferred (agent-project-management.md)
 - Q&A 0.0.5: Complete (keeping-project-files-clean.md)
-- Q&A 0.0.6: In progress (multi-track-development.md)
+- Q&A 0.0.6 (methodology-0.0.3-multi-track): In progress (multi-track-development.md)
 - Requirements approval gate: v0.0.1 passed
 
 ## Outstanding Work
@@ -34,8 +35,8 @@
   - Encouraging adherence to methodology while remaining helpful
 
 ## Next Steps
-1. Answer Q&A 0.0.6 questions (track definition, track-list home, naming, version number)
-2. Revise the multi-track sections from those answers and from review feedback
+1. methodology-0.0.3-multi-track: answer Q&A 0.0.6 questions (track definition, track-list home, naming, version number)
+2. methodology-0.0.3-multi-track: revise the multi-track sections from those answers and from review feedback
 3. Resume Q&A 0.0.4 (Agent project management and phase guidance)
 4. Draft and integrate the agent project management section
 5. Review for the v0.0.3 approval gate

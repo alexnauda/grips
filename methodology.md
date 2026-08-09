@@ -658,6 +658,8 @@ When encountering conflicts or inconsistencies:
 
 A project runs **single-track** when one session advances one unit of work at a time. It runs **multi-track** when several units of work progress concurrently, typically in separate git worktrees with a different agent session driving each one. Multi-track work shares one spec tree and one PROJECT-STATUS.md, so the methodology fixes who writes what and where concurrent writes land.
 
+**A project that uses tracks carries the per-track form from its first track onward.** The per-track status structure (6.3) is the standing form for such a project, not a shape adopted when a second track appears. A project with one declared track carries one entry, and starting a second track adds an entry rather than restructuring the file. Deferring the structure until a second track exists makes that second track's first act a rewrite of shared lines its sibling is concurrently editing, which is the conflict the structure exists to prevent.
+
 #### 5.9.1 Definition of a Track
 
 A **track** is an independently progressing unit of work with three properties:
@@ -794,8 +796,8 @@ GRIPS uses two levels of status tracking:
 Track overall project progress in `PROJECT-STATUS.md` at project root. The file uses a **closed template**: it permits exactly the sections below and nothing else. Content that does not fit one of these sections does not belong in the file — route it to its home (see Content Routing, below). A closed schema is what keeps the file from accreting narrative; an open-ended "put status here" remit is what invites it.
 
 **Permitted Sections** (the only sections allowed):
-1. **Header** — current phase, plus the active work expressed as one entry per **track** (5.9): the track's current stage and what it is doing. A single-track project states this as a Current Stage line and a one-to-two-sentence Active Work line. Forward-looking only.
-2. **Layer Synchronization** — which layers are updated, in sync, or pending (e.g., "Requirements updated in commit abc123, design not yet synced"), one line per track per layer while more than one track is active.
+1. **Header** — current phase, plus the active work expressed as one entry per **track** (5.9): the track's current stage and what it is doing. A project that uses no tracks states this as a Current Stage line and a one-to-two-sentence Active Work line. Forward-looking only.
+2. **Layer Synchronization** — which layers are updated, in sync, or pending (e.g., "Requirements updated in commit abc123, design not yet synced"), one line per track per layer in a project that uses tracks, and one line per layer in a project that uses none.
 3. **Outstanding Work** — incomplete items only, with enough context to resume. Where a tracker (such as GitHub issues) exists, reference each item by number and a one-line status; do not restate the tracked item's full description here. Reserve inline resume-context for work too granular or ephemeral to warrant a tracked issue.
 4. **Next Steps** — a short ordered list of what comes next. Incomplete items only.
 5. **Sessions & Gates** — an index of Q&A and ADR sessions with their status, and approval gates passed. This is state, not narrative: session names and their statuses, never a log of what was accomplished.
@@ -830,7 +832,7 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
 
 **Purpose**: PROJECT-STATUS.md answers "Where are we now and what's next?" It is NOT a changelog, release notes, or project history. Keep it minimal and forward-looking.
 
-**Multi-Track Status Entries**: While more than one **track** (5.9) is active, the file carries one entry per track so that concurrent edits from different worktrees touch disjoint lines. The closed template is unchanged: the track list belongs to the header section, and the permitted sections remain five.
+**Multi-Track Status Entries**: A project that uses **tracks** (5.9) carries one entry per track from its first track onward, so that concurrent edits from different worktrees touch disjoint lines. One declared track means one entry, and a second track adds its own entry without touching the first. The closed template is unchanged: the track list belongs to the header section, and the permitted sections remain five.
 
 - **Active Tracks** (part of the header): one bullet per track, in the form "**{track-name}** (branch {branch}, worktree {path}): {layer and stage}; next gate: {gate}; {links}". Each bullet is self-contained and is written only by that track's owning session.
 - **Layer Synchronization**: one line per track per layer, prefixed with the track name and grouped by track. A layer that no active track has touched needs no line.
@@ -838,7 +840,7 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
 - **Sessions & Gates**: a session or gate belonging to a track names the track alongside it, so gate state is unambiguous when tracks pass the same layer's gate at different times.
 - A completing track deletes its own Active Tracks bullet, its Layer Synchronization lines, and its track-prefixed items in the change that merges the track.
 
-**Example (single track)**:
+**Example (a project that uses no tracks)**:
 ```markdown
 # Project Status
 
@@ -872,6 +874,8 @@ Track overall project progress in `PROJECT-STATUS.md` at project root. The file 
 2. Pass requirements approval gate
 3. Begin design Q&A session
 ```
+
+A project that uses tracks carries the form below instead, with one Active Tracks bullet per declared track, including when it has declared only one.
 
 **Example (three concurrent tracks)**:
 ```markdown
@@ -975,7 +979,7 @@ Each track edits only the lines carrying its own name, so the three sessions reb
      - Where a tracker exists, reference issues by number plus a one-line status — do not restate the issue's body in status
    - **Next Steps**: List upcoming tasks (brief, no completed items)
    - Track layer synchronization status
-   - While other tracks are active (5.9), edit only your own track's entries, keep each entry self-contained, and delete your track's entries when it merges
+   - In a project that uses tracks (5.9), edit only your own track's entries, keep each entry self-contained, and delete your track's entries when your track merges
    - Maintain the **Sessions & Gates** index (Q&A/ADR session statuses and approval gates passed) — state only, never an accomplishment log
    - **DO NOT** include release notes, change logs, or completed accomplishments, or a "Recent Activity" section under any name
    - **DO NOT** mark items as "✅ COMPLETE" in Outstanding Work (remove them when done)
