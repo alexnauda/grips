@@ -4,14 +4,16 @@
 
 ## Tracks
 
-### methodology-0.0.3-multi-track
-**Branch**: methodology/0.0.3-dev-multi-track
-**Stage**: Requirements, Review Cycle 1 on the v0.0.3-dev multi-track guidance (methodology 5.9 and 6.3)
-**Next Gate**: v0.0.3 requirements approval
+### architecture-context-hygiene
+**Branch**: methodology/0.1.0-dev-architecture-context-hygiene
+**Stage**: Requirements, review of the 0.1.0-dev integration of the Q&A 0.0.7 principles (methodology 1.4 and 5.10)
+**Next Gate**: v0.1.0 requirements approval
+**Cross-Track Dependencies**: none
 **Layer Synchronization**: Requirements (methodology.md) updated on the track branch, in review
-**Sessions & Gates**: Q&A 0.0.6 in progress (multi-track-development.md)
-**Next Steps**: answer the Q&A 0.0.6 questions (track definition, track-list home, naming, version number), then revise the multi-track sections from those answers and from review feedback
-**Links**: https://github.com/alexnauda/grips/pull/4
+**Sessions & Gates**: Q&A 0.0.7 complete (architecture-context-hygiene.md); Q&A 0.0.6 Question 4 answered (version increment)
+**Outstanding Work**: Q&A 0.0.6 Questions 1 through 3 remain unanswered
+**Next Steps**: land the integration, then close the superseded pull request 3
+**Links**: https://github.com/alexnauda/grips/pull/3 (superseded), https://github.com/alexnauda/grips/pull/4 (multi-track, merged)
 
 ## Layer Synchronization
 - Design: Not applicable (methodology is the product)
@@ -23,6 +25,8 @@
 - Q&A 0.0.3: Complete (implementation-plan-guidance.md)
 - Q&A 0.0.4: Started, deferred (agent-project-management.md)
 - Q&A 0.0.5: Complete (keeping-project-files-clean.md)
+- Q&A 0.0.6: Questions 1 through 3 open, Question 4 answered (multi-track-development.md)
+- Q&A 0.0.7: Complete (architecture-context-hygiene.md)
 - Requirements approval gate: v0.0.1 passed
 
 ## Outstanding Work
